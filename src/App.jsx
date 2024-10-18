@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import { fetchUSDRates, fetchEURRates, fetchUAHRates } from "./api";
 import Converter from "./components/Converter/Converter";
 import Header from "./components/Header/Header";
 
@@ -10,10 +10,9 @@ const App = () => {
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const response = await axios.get(
-          "https://open.er-api.com/v6/latest/UAH"
-        );
-        setRates(response.data.rates);
+        const usdRate = await fetchUSDRates();
+        const eurRate = await fetchEURRates();
+        setRates({ USD: usdRate, EUR: eurRate });
       } catch (err) {
         setError("Error fetching exchange rates");
       }
@@ -28,7 +27,7 @@ const App = () => {
   return (
     <div>
       <Header rates={rates} />
-      <Converter rates={rates} />
+      <Converter />
     </div>
   );
 };

@@ -1,13 +1,33 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import css from "./Converter.module.css";
 
-const Converter = ({ rates }) => {
+const Converter = () => {
+  const [rates, setRates] = useState({});
   const [amount1, setAmount1] = useState(1);
   const [currency1, setCurrency1] = useState("USD");
-  const [amount2, setAmount2] = useState((1 / rates["USD"]) * rates["UAH"]);
+  const [amount2, setAmount2] = useState(0); 
   const [currency2, setCurrency2] = useState("UAH");
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const response = await axios.get(
+          "https://open.er-api.com/v6/latest/UAH"
+        );
+        setRates(response.data.rates);
+        setAmount2(convertCurrency(1, currency1, currency2)); // Встановлюємо початкове значення для amount2
+      } catch (err) {
+        setError("Error fetching exchange rates");
+      }
+    };
+    fetchRates();
+  }, []);
+
+  // Функція для конвертації
   const convertCurrency = (amount, fromCurrency, toCurrency) => {
+    if (!rates[fromCurrency] || !rates[toCurrency]) return 0; // Повертаємо 0, якщо курси не завантажені
     const result = (amount / rates[fromCurrency]) * rates[toCurrency];
     return result.toFixed(2);
   };
@@ -29,6 +49,10 @@ const Converter = ({ rates }) => {
     setCurrency2(newCurrency2);
     setAmount2(convertCurrency(amount1, currency1, newCurrency2));
   };
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className={css.converter}>
