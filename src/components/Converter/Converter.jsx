@@ -17,7 +17,7 @@ const Converter = () => {
           "https://open.er-api.com/v6/latest/UAH"
         );
         setRates(response.data.rates);
-        setAmount2(convertCurrency(1, currency1, currency2)); // Встановлюємо початкове значення для amount2
+        setAmount2(convertCurrency(1, currency1, currency2)); 
       } catch (err) {
         setError("Error fetching exchange rates");
       }
@@ -25,9 +25,8 @@ const Converter = () => {
     fetchRates();
   }, []);
 
-  // Функція для конвертації
   const convertCurrency = (amount, fromCurrency, toCurrency) => {
-    if (!rates[fromCurrency] || !rates[toCurrency]) return 0; // Повертаємо 0, якщо курси не завантажені
+    if (!rates[fromCurrency] || !rates[toCurrency]) return 0; 
     const result = (amount / rates[fromCurrency]) * rates[toCurrency];
     return result.toFixed(2);
   };
